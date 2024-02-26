@@ -5,10 +5,11 @@ import type { GlobalStyleObject } from '@pandacss/types'
 
 export function generateResetCss(ctx: Context, sheet: Stylesheet) {
   const { preflight } = ctx.config
-  const scope = isObject(preflight) ? preflight.scope : undefined
-  const selector = scope ? `${scope} ` : ''
+  const { scope = '', level = 'parent' } = isObject(preflight) ? preflight : {}
+  const parentScope = scope && level === 'parent' ? `${scope} ` : ''
+  const elementScope = scope && level === 'element' ? `${scope}` : ''
 
-  const scoped = {
+  const scoped: GlobalStyleObject = {
     '*': { margin: '0px', padding: '0px', font: 'inherit' },
     '*, *::before, *::after': {
       boxSizing: 'border-box',
@@ -102,8 +103,20 @@ export function generateResetCss(ctx: Context, sheet: Stylesheet) {
     },
   }
 
-  if (selector) {
-    reset[selector] = scoped
+  if (elementScope) {
+    for (const key of Object.keys(scoped)) {
+      const selectors = key.split(',')
+      if (selectors.length) {
+        scoped[`${selectors.map((selector) => `${selector}${elementScope}`).join(',')}`] = scoped[key]
+      } else {
+        scoped[`${selectors.join()}${elementScope}`] = scoped[key]
+      }
+      delete scoped[key]
+    }
+  }
+
+  if (parentScope) {
+    reset[parentScope] = scoped
   } else {
     Object.assign(reset, scoped)
   }
