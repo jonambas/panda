@@ -109,7 +109,7 @@ export function generateResetCss(ctx: Context, sheet: Stylesheet) {
       if (selectors.length) {
         scoped[`${selectors.map((selector) => `${selector}${elementScope}`).join(',')}`] = scoped[key]
       } else {
-        scoped[`${selectors.join()}${elementScope}`] = scoped[key]
+        scoped[`${key}${elementScope}`] = scoped[key]
       }
       delete scoped[key]
     }
