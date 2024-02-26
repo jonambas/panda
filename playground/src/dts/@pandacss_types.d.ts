@@ -10904,6 +10904,7 @@ export interface CssgenOptions {
 	 */
 	preflight?: boolean | {
 		scope: string;
+		level?: 'parent' | 'element';
 	};
 	/**
 	 * The namespace prefix for the generated css classes and css variables.
